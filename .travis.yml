@@ -5,6 +5,8 @@ env:
   - EVM_EMACS=emacs-git-snapshot-travis
 
 install:
+  - sudo apt-get update
+  - sudo apt-get install sqlite3
   - git clone https://github.com/rejeep/evm.git $HOME/.evm
   - export PATH=$HOME/.evm/bin:$HOME/.cask/bin:$PATH
 
