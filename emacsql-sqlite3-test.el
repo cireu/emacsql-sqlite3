@@ -44,6 +44,8 @@
       (emacsql-with-connection (db (funcall (cdr factory)))
         (unwind-protect
              (progn
+               ;; Temporarily open foreign key support.
+               (emacsql db [:pragma (= foreign_keys ON)])
                (emacsql-thread db
                  [:create-table person ([(id integer :primary-key) name])]
                  [:create-table likes
