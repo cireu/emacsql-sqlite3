@@ -110,8 +110,6 @@ http://www.sqlite.org/lang_keywords.html")
     (setf (emacsql-process conn) proc)
     (emacsql conn [:pragma (= busy-timeout $s1)]
              (/ (* emacsql-global-timeout 1000) 2))
-    ;; Foreign key support was disable by default.
-    (emacsql conn [:pragma (= foreign_keys ON)])
     (emacsql-register conn)))
 
 (cl-defmethod emacsql-waiting-p ((conn emacsql-sqlite3-connection))
