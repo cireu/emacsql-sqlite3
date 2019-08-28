@@ -1,0 +1,174 @@
+;;; emacsql-sqlite3.el --- Yet another EmacsSQL backend for SQLite -*- lexical-binding: t -*-
+
+;; Copyright (C) 2019 Zhu Zihao
+
+;; Author: Zhu Zihao <all_but_last@163.com>
+;; URL: https://github.com/cireu/emacsql-sqlite3
+;; Version: 1.0.0
+;; Package-Requires: ((emacs "25.1") (emacsql "3.0.0"))
+;; Keywords: extension
+
+;; This file is NOT part of GNU Emacs.
+
+;; This file is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; For a full copy of the GNU General Public License
+;; see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;;
+
+;;; Code:
+
+(require 'cl-lib)
+(require 'eieio)
+(require 'emacsql)
+
+(defconst emacsql-sqlite3--cmd-end-mark "#"
+  "The string should be printed when a command was executed.")
+
+(defconst emacsql-sqlite3-reserved
+  (emacsql-register-reserved
+   '(ABORT ACTION ADD AFTER ALL ALTER ANALYZE AND AS ASC ATTACH
+     AUTOINCREMENT BEFORE BEGIN BETWEEN BY CASCADE CASE CAST CHECK
+     COLLATE COLUMN COMMIT CONFLICT CONSTRAINT CREATE CROSS
+     CURRENT_DATE CURRENT_TIME CURRENT_TIMESTAMP DATABASE DEFAULT
+     DEFERRABLE DEFERRED DELETE DESC DETACH DISTINCT DROP EACH ELSE END
+     ESCAPE EXCEPT EXCLUSIVE EXISTS EXPLAIN FAIL FOR FOREIGN FROM FULL
+     GLOB GROUP HAVING IF IGNORE IMMEDIATE IN INDEX INDEXED INITIALLY
+     INNER INSERT INSTEAD INTERSECT INTO IS ISNULL JOIN KEY LEFT LIKE
+     LIMIT MATCH NATURAL NO NOT NOTNULL NULL OF OFFSET ON OR ORDER
+     OUTER PLAN PRAGMA PRIMARY QUERY RAISE RECURSIVE REFERENCES REGEXP
+     REINDEX RELEASE RENAME REPLACE RESTRICT RIGHT ROLLBACK ROW
+     SAVEPOINT SELECT SET TABLE TEMP TEMPORARY THEN TO TRANSACTION
+     TRIGGER UNION UNIQUE UPDATE USING VACUUM VALUES VIEW VIRTUAL WHEN
+     WHERE WITH WITHOUT))
+  "List of all of SQLite's reserved words.
+http://www.sqlite.org/lang_keywords.html")
+
+(defclass emacsql-sqlite3-connection (emacsql-connection)
+  ((file :initarg :file
+         :type (or null string)
+         :documentation "Database file name.")
+   (types :allocation :class
+          :reader emacsql-types
+          :initform '((integer "INTEGER")
+                      (float "REAL")
+                      (object "TEXT")
+                      (nil nil))))
+  "A connection to a SQLite database, using official `sqlite3' executable.")
+
+(defun emacsql-sqlite3--proc-sentinel (proc _change)
+  "Called each time when PROC status changed."
+  (when (not (process-live-p proc))
+    (let ((buf (process-buffer proc)))
+      (when (buffer-live-p buf)
+        (kill-buffer buf)))))
+
+(cl-defmethod emacsql-sqlite3-run-dot-command
+    ((conn emacsql-sqlite3-connection) command &rest args)
+  "Send dot COMMAND with ARGS to CONN."
+  (let* ((proc (emacsql-process conn))
+         (cmd-name (format ".%s" (if (keywordp command)
+                                     (substring (symbol-name command) 1)
+                                   command))))
+    (process-send-string proc (mapconcat #'identity (cons cmd-name args) " "))
+    nil))
+
+;;; Mandotary API
+
+;; Some class don't call superclass's constructor!
+(cl-defmethod initialize-instance :after
+    ((conn emacsql-sqlite3-connection) _slots)
+  (cl-assert (executable-find "sqlite3") nil
+             "Cannot find executable \"sqlite3\"!")
+  (let* ((file (oref conn file))
+         (fullfile (if file (list (expand-file-name file))))
+         (proc (make-process
+                :name "emacsql-sqlite3"
+                :command `("sqlite3" "--batch"
+                                     ;; Use space as separator,
+                                     ;; which is convenient for `read'.
+                                     "--list" "--separator" " "
+                                     ;; Obiviously
+                                     "--nullvalue" "nil"
+                                     ,@fullfile)
+                :buffer (generate-new-buffer " *emacsql sqlite*")
+                :noquery t
+                :connection-type 'pipe
+                :coding 'utf-8-auto
+                :sentinel #'emacsql-sqlite3--proc-sentinel)))
+    (setf (emacsql-process conn) proc)
+    (emacsql conn [:pragma (= busy-timeout $s1)]
+             (/ (* emacsql-global-timeout 1000) 2))
+    (emacsql-register conn)))
+
+(cl-defmethod emacsql-waiting-p ((conn emacsql-sqlite3-connection))
+  (with-current-buffer (emacsql-buffer conn)
+    (save-excursion
+      (goto-char (point-max))
+      (re-search-backward (rx-to-string `(and ,emacsql-sqlite3--cmd-end-mark
+                                              "\n"
+                                              point)) nil t))))
+
+(cl-defmethod emacsql-send-message ((conn emacsql-sqlite3-connection) message)
+  (let ((proc (emacsql-process conn)))
+    (process-send-string proc message)
+    (process-send-string proc "\n")
+    ;; HACK: Print a fake prompt "#" after each command.
+    ;; this is because some command don't echo when success.
+    ;; We need a prompt to refer a command was executed or not.
+    (emacsql-sqlite3-run-dot-command conn :print "#")
+    (process-send-string proc "\n")
+    nil))
+
+(cl-defmethod emacsql-parse ((conn emacsql-sqlite3-connection))
+  (with-current-buffer (emacsql-buffer conn)
+    (goto-char (point-min))
+    (if (looking-at (rx "Error: " (group (1+ char)) eol))
+        (signal 'emacsql-error (list (match-string 1)))
+      (cl-macrolet ((sexps-in-line! ()
+                      `(cl-loop
+                          until (looking-at "\n")
+                          collect (read (current-buffer)))))
+        (cl-loop
+           until (looking-at
+                  (concat (regexp-quote emacsql-sqlite3--cmd-end-mark) "\n"))
+           collect (sexps-in-line!)
+           do (forward-char))))))
+
+(cl-defmethod emacsql-close ((conn emacsql-sqlite3-connection))
+  "Gracefully exits the SQLite subprocess."
+  (let ((process (emacsql-process conn)))
+    (when (process-live-p process)
+      (process-send-eof process))))
+
+;;; Main entry
+
+(cl-defun emacsql-sqlite3 (file &key debug)
+  "Open a connected to database stored in FILE.
+If FILE is nil use an in-memory database.
+
+:debug LOG -- When non-nil, log all SQLite commands to a log
+buffer. This is for debugging purposes."
+  (let ((connection (make-instance 'emacsql-sqlite3-connection :file file)))
+    (when debug
+      (emacsql-enable-debugging connection))
+    connection))
+
+(provide 'emacsql-sqlite3)
+
+;; Local Variables:
+;; coding: utf-8
+;; End:
+
+;;; emacsql-sqlite3.el ends here
