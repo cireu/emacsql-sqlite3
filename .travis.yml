@@ -15,5 +15,6 @@ install:
   - cask install
 
 script:
+  - sqlite3 --version
   - cask build 
   - cask exec ert-runner emacsql-sqlite3-test.el
