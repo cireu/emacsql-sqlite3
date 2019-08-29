@@ -6,7 +6,7 @@
 ;; URL: https://github.com/cireu/emacsql-sqlite3
 ;; Version: 1.0.0
 ;; Package-Requires: ((emacs "26.1") (emacsql "3.0.0"))
-;; Keywords: extension
+;; Keywords: extensions
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -179,7 +179,6 @@ http://www.sqlite.org/lang_keywords.html")
            do (forward-char))))))
 
 (cl-defmethod emacsql-close ((conn emacsql-sqlite3-connection))
-  "Gracefully exits the SQLite subprocess."
   (let ((process (emacsql-process conn)))
     (when (process-live-p process)
       (process-send-eof process))))
@@ -190,7 +189,7 @@ http://www.sqlite.org/lang_keywords.html")
   "Open a connected to database stored in FILE.
 If FILE is nil use an in-memory database.
 
-:debug LOG -- When non-nil, log all SQLite commands to a log
+If DEBUG is non-nil, log all SQLite commands to a log
 buffer. This is for debugging purposes."
   (let ((connection (make-instance 'emacsql-sqlite3-connection :file file)))
     (when debug
