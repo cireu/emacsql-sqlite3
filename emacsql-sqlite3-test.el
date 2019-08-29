@@ -1,4 +1,4 @@
-;;; emacsql-external-tests.el --- subprocess tests -*- lexical-binding: t; -*-
+;;; emacsql-sqlite3-tests.el --- subprocess tests -*- lexical-binding: t; -*-
 
 (require 'cl-lib)
 (require 'ert)
@@ -89,6 +89,4 @@
         (should (equal (emacsql db [:select * :from test-table])
                        '(("") (\))))))))
 
-(provide 'emacsql-external-tests)
-
-;;; emacsql-external-tests.el ends here
+;;; emacsql-sqlite3-tests.el ends here
