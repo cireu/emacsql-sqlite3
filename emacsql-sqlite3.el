@@ -121,7 +121,8 @@ each arg will be quoted first."
                                      (substring (symbol-name command) 1)
                                    command))))
     (process-send-string proc (concat cmd-name " "
-                                      (mapconcat #'prin1-to-string args " ")))
+                                      (mapconcat #'prin1-to-string args " ")
+                                      "\n"))
     nil))
 
 ;;; Mandotary API
@@ -168,7 +169,6 @@ each arg will be quoted first."
     ;; this is because some command don't echo when success.
     ;; We need a prompt to refer a command was executed or not.
     (emacsql-sqlite3-run-dot-command conn :print "#")
-    (process-send-string proc "\n")
     nil))
 
 (cl-defmethod emacsql-parse ((conn emacsql-sqlite3-connection))
