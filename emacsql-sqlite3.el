@@ -106,14 +106,22 @@ http://www.sqlite.org/lang_keywords.html")
       (when (buffer-live-p buf)
         (kill-buffer buf)))))
 
-(cl-defmethod emacsql-sqlite3-run-dot-command
-    ((conn emacsql-sqlite3-connection) command &rest args)
-  "Send dot COMMAND with ARGS to CONN."
+(defun emacsql-sqlite3-run-dot-command (conn command &rest args)
+  "Format a dot-command with COMMAND and ARGS, then send it to CONN.
+
+Sign: (-> emacsql-sqlite3-connection (U Sym Str) :rest (Listof Str) Nil)
+
+COMMAND can be a symbol/keyword/string, which will be converted to string
+if a keyword was presented, heading colon will be removed.
+
+ARGS is list of strings which will be appended to command sequentially,
+each arg will be quoted first."
   (let* ((proc (emacsql-process conn))
          (cmd-name (format ".%s" (if (keywordp command)
                                      (substring (symbol-name command) 1)
                                    command))))
-    (process-send-string proc (mapconcat #'identity (cons cmd-name args) " "))
+    (process-send-string proc (concat cmd-name " "
+                                      (mapconcat #'prin1-to-string args " ")))
     nil))
 
 ;;; Mandotary API
