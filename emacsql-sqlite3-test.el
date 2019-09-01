@@ -89,4 +89,32 @@
         (should (equal (emacsql db [:select * :from test-table])
                        '(("") (\))))))))
 
+(defun emacsql-sqlite3-run-dot-command-sync (conn cmd &rest args)
+  "Like `emacsql-sqlite3-run-dot-command', but synchronously."
+  (cl-letf* ((proc (emacsql-process conn))
+             (retsym (make-symbol "retsym"))
+             ((process-filter proc)
+              (lambda (_proc string)
+                (throw retsym string))))
+    (catch retsym
+      (apply #'emacsql-sqlite3-run-dot-command conn cmd args)
+      (accept-process-output proc emacsql-tests-timeout))))
+
+(ert-deftest emacsql-sqlite3-dot-command ()
+  "Test `emacsql-sqlite3-run-dot-command'."
+  (dolist (factory emacsql-tests-connection-factories)
+    (emacsql-with-connection (conn (funcall (cdr factory)))
+      (should (equal
+               (emacsql-sqlite3-run-dot-command-sync conn :print "OK")
+               "OK\n"))
+      (should (equal
+               (emacsql-sqlite3-run-dot-command-sync conn 'print "OK")
+               "OK\n"))
+      (should (equal
+               (emacsql-sqlite3-run-dot-command-sync conn "print" "OK")
+               "OK\n"))
+      (should (equal
+               (emacsql-sqlite3-run-dot-command-sync conn "print" "O K")
+               "O K\n")))))
+
 ;;; emacsql-sqlite3-tests.el ends here
