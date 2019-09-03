@@ -41,10 +41,10 @@
 ;; tested, =emacsql-sqlite3= may won't work if you using lower version.
 
 ;; =sqlite3= CLI tool will load =~/.sqliterc= if presented, =emacsql-sqlite3=
-;; will get undefined behaviour if any error occured during the load progress.
+;; will get undefined behaviour if any error occurred during the load progress.
 
 ;; The only entry point to a EmacsSQL interface is =emacsql-sqlite3=, for more
-;; informations, please check EmacsSQL's README.
+;; information, please check EmacsSQL's README.
 
 ;; ** About Closql
 
@@ -85,7 +85,7 @@
      TRIGGER UNION UNIQUE UPDATE USING VACUUM VALUES VIEW VIRTUAL WHEN
      WHERE WITH WITHOUT))
   "List of all of SQLite's reserved words.
-http://www.sqlite.org/lang_keywords.html")
+https://www.sqlite.org/lang_keywords.html")
 
 (defclass emacsql-sqlite3-connection (emacsql-connection)
   ((file :initarg :file
@@ -109,7 +109,7 @@ http://www.sqlite.org/lang_keywords.html")
 (defun emacsql-sqlite3-run-dot-command (conn command &rest args)
   "Format a dot-command with COMMAND and ARGS, then send it to CONN.
 
-Sign: (-> emacsql-sqlite3-connection (U Sym Str) :rest (Listof Str) Nil)
+Sign: (-> `emacsql-sqlite3-connection' (U Sym Str) :rest (Listof Str) Nil)
 
 COMMAND can be a symbol/keyword/string, which will be converted to string
 if a keyword was presented, heading colon will be removed.
@@ -125,7 +125,7 @@ each arg will be quoted first."
                                       "\n"))
     nil))
 
-;;; Mandotary API
+;;; Mandatory API
 
 ;; Some class don't call superclass's constructor!
 (cl-defmethod initialize-instance :after
@@ -140,7 +140,7 @@ each arg will be quoted first."
                                      ;; Use space as separator,
                                      ;; which is convenient for `read'.
                                      "--list" "--separator" " "
-                                     ;; Obiviously
+                                     ;; Obviously
                                      "--nullvalue" "nil"
                                      ,@fullfile)
                 :buffer (generate-new-buffer " *emacsql sqlite*")

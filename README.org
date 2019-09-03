@@ -1,4 +1,4 @@
-# Created 2019-08-29 Thu 19:16
+# Created 2019-09-03 Tue 12:25
 #+TITLE: Yet another EmacsSQL backend for SQLite
 #+AUTHOR: Zhu Zihao
 * README
@@ -17,10 +17,10 @@ You need to install =sqlite3= official CLI tool, 3.8.2 version or above were
 tested, =emacsql-sqlite3= may won't work if you using lower version.
 
 =sqlite3= CLI tool will load =~/.sqliterc= if presented, =emacsql-sqlite3=
-will get undefined behaviour if any error occured during the load progress.
+will get undefined behaviour if any error occurred during the load progress.
 
 The only entry point to a EmacsSQL interface is =emacsql-sqlite3=, for more
-informations, please check EmacsSQL's README.
+information, please check EmacsSQL's README.
 
 ** About Closql
 
