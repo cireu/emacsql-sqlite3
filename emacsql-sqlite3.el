@@ -101,7 +101,7 @@ https://www.sqlite.org/lang_keywords.html")
 
 (defun emacsql-sqlite3--proc-sentinel (proc _change)
   "Called each time when PROC status changed."
-  (when (not (process-live-p proc))
+  (unless (process-live-p proc)
     (let ((buf (process-buffer proc)))
       (when (buffer-live-p buf)
         (kill-buffer buf)))))
