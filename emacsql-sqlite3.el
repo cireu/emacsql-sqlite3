@@ -208,8 +208,8 @@ buffer. This is for debugging purposes."
 
 ;; Local Variables:
 ;; coding: utf-8
-;; eval: (setq-local el2org-default-backend 'org)
-;; eval: (setq-local el2org-add-notification nil)
+;; el2org-default-backend: org
+;; el2org-add-notification: nil
 ;; End:
 
 ;;; emacsql-sqlite3.el ends here
