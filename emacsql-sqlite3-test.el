@@ -84,10 +84,10 @@
     (dolist (factory emacsql-tests-connection-factories)
       (emacsql-with-connection (db (funcall (cdr factory)))
         (emacsql db [:create-temporary-table test-table ([x])])
-        (emacsql db [:insert-into test-table :values ([""] [\])])
+        (emacsql db [:insert-into test-table :values ([""] [\] ["m\nn"])])
         (should (process-live-p (emacsql-process db)))
         (should (equal (emacsql db [:select * :from test-table])
-                       '(("") (\))))))))
+                       '(("") (\) ("m\nn"))))))))
 
 (defun emacsql-sqlite3-run-dot-command-sync (conn cmd &rest args)
   "Like `emacsql-sqlite3-run-dot-command', but synchronously."
