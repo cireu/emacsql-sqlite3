@@ -109,7 +109,7 @@ https://www.sqlite.org/lang_keywords.html")
 (defun emacsql-sqlite3-run-dot-command (conn command &rest args)
   "Format a dot-command with COMMAND and ARGS, then send it to CONN.
 
-Sign: (-> `emacsql-sqlite3-connection' (U Sym Str) :rest (Listof Str) Nil)
+Sign: (-> `emacsql-sqlite3-connection' (U Sym Str) &rest (Listof Str) Nil)
 
 COMMAND can be a symbol/keyword/string, which will be converted to string
 if a keyword was presented, heading colon will be removed.
