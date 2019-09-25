@@ -5,6 +5,12 @@
 (require 'emacsql)
 (require 'emacsql-sqlite3)
 
+;; Workaround for known bug of ert-runner
+;; https://github.com/rejeep/ert-runner.el/issues/49
+(eval-and-compile
+  (unless (fboundp 'ert--print-backtrace)
+    (defalias 'ert--print-backtrace #'backtrace-to-string)))
+
 (defvar emacsql-tests-timeout 4
   "Be aggressive about not waiting on subprocesses in unit tests.")
 
