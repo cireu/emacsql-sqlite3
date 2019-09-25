@@ -84,8 +84,8 @@
   (cl-letf* ((proc (emacsql-process conn))
              (retsym (make-symbol "retsym"))
              ((process-filter proc)
-              (lambda (_proc string)
-                (throw retsym string))))
+               (lambda (_proc string)
+                 (throw retsym string))))
     (catch retsym
       (apply #'emacsql-sqlite3-run-dot-command conn cmd args)
       (accept-process-output proc emacsql-tests-timeout))))
