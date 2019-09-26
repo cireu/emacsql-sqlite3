@@ -27,7 +27,7 @@
 
 ;; * README                                                             :README:
 
-;; [[https://melpa.org/#/emacsql-sqlite3][file:https://melpa.org/packages/emacsql-sqlite3.svg]]
+;; [[https://melpa.org/#/emacsql-sqlite3][file:https://melpa.org/packages/emacsql-sqlite3-badge.svg]]
 ;; [[https://travis-ci.org/cireu/emacsql-sqlite3][file:https://travis-ci.org/cireu/emacsql-sqlite3.svg?branch=master]]
 
 ;; ** Introduction
