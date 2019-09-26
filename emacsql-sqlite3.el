@@ -1,4 +1,4 @@
-;;; emacsql-sqlite3.el --- Yet another EmacsSQL backend for SQLite -*- lexical-binding: t -*-
+;;; emacsql-sqlite3.el --- Yet another EmacSQL backend for SQLite -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2019 Zhu Zihao
 
@@ -29,7 +29,7 @@
 
 ;; ** Introduction
 
-;; This is yet another [[https://github.com/skeeto/emacsql][EmacsSQL]] backend for SQLite, which use official =sqlite3=
+;; This is yet another [[https://github.com/skeeto/emacsql][EmacSQL]] backend for SQLite, which use official =sqlite3=
 ;; executable to access SQL database.
 
 ;; The tests don't pass under Emacs 25.1 for unknown reason, so we don't support
@@ -43,8 +43,8 @@
 ;; =sqlite3= CLI tool will load =~/.sqliterc= if presented, =emacsql-sqlite3=
 ;; will get undefined behaviour if any error occurred during the load progress.
 
-;; The only entry point to a EmacsSQL interface is =emacsql-sqlite3=, for more
-;; information, please check EmacsSQL's README.
+;; The only entry point to a EmacSQL interface is =emacsql-sqlite3=, for more
+;; information, please check EmacSQL's README.
 
 ;; ** About Closql
 
