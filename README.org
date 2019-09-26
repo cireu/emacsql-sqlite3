@@ -1,7 +1,10 @@
-# Created 2019-09-26 Thu 12:52
+# Created 2019-09-26 Thu 23:40
 #+TITLE: Yet another EmacSQL backend for SQLite
 #+AUTHOR: Zhu Zihao
 * README
+
+[[https://melpa.org/#/emacsql-sqlite3][file:https://melpa.org/packages/emacsql-sqlite3.svg]]
+[[https://travis-ci.org/cireu/emacsql-sqlite3][file:https://travis-ci.org/cireu/emacsql-sqlite3.svg?branch=master]]
 
 ** Introduction
 
@@ -10,6 +13,10 @@ executable to access SQL database.
 
 The tests don't pass under Emacs 25.1 for unknown reason, so we don't support
 Emacs 25.1 currently. But any PR to improve this are welcomed.
+
+** Installation
+
+=emacsql-sqlite3= is available on melpa.
 
 ** Usage
 

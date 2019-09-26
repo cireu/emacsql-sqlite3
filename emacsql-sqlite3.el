@@ -27,6 +27,9 @@
 
 ;; * README                                                             :README:
 
+;; [[https://melpa.org/#/emacsql-sqlite3][file:https://melpa.org/packages/emacsql-sqlite3.svg]]
+;; [[https://travis-ci.org/cireu/emacsql-sqlite3][file:https://travis-ci.org/cireu/emacsql-sqlite3.svg?branch=master]]
+
 ;; ** Introduction
 
 ;; This is yet another [[https://github.com/skeeto/emacsql][EmacSQL]] backend for SQLite, which use official =sqlite3=
@@ -34,6 +37,10 @@
 
 ;; The tests don't pass under Emacs 25.1 for unknown reason, so we don't support
 ;; Emacs 25.1 currently. But any PR to improve this are welcomed.
+
+;; ** Installation
+
+;; =emacsql-sqlite3= is available on melpa.
 
 ;; ** Usage
 
