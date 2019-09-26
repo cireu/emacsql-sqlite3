@@ -177,14 +177,13 @@ each arg will be quoted first."
     (if (looking-at (rx "Error: " (group (1+ char)) eol))
         (signal 'emacsql-error (list (match-string 1)))
       (cl-macrolet ((sexps-in-line! ()
-                      `(cl-loop
-                          until (looking-at "\n")
-                          collect (read (current-buffer)))))
+                      `(cl-loop until (looking-at "\n")
+                                collect (read (current-buffer)))))
         (cl-loop
-           until (looking-at
-                  (concat (regexp-quote emacsql-sqlite3--cmd-end-mark) "\n"))
-           collect (sexps-in-line!)
-           do (forward-char))))))
+          until (looking-at
+                 (concat (regexp-quote emacsql-sqlite3--cmd-end-mark) "\n"))
+          collect (sexps-in-line!)
+          do (forward-char))))))
 
 (cl-defmethod emacsql-close ((conn emacsql-sqlite3-connection))
   (let ((process (emacsql-process conn)))
