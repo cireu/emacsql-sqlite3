@@ -181,7 +181,7 @@ each arg will be quoted first."
 (cl-defmethod emacsql-parse ((conn emacsql-sqlite3-connection))
   (with-current-buffer (emacsql-buffer conn)
     (goto-char (point-min))
-    (if (looking-at (rx "Error: " (group (1+ char)) eol))
+    (if (looking-at (rx "Error: " (group (1+ any)) eol))
         (signal 'emacsql-error (list (match-string 1)))
       (cl-macrolet ((sexps-in-line! ()
                       `(cl-loop until (looking-at "\n")
