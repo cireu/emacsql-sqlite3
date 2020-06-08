@@ -105,6 +105,15 @@
   "List of all of SQLite's reserved words.
 https://www.sqlite.org/lang_keywords.html")
 
+(defgroup emacsql-sqlite3 ()
+  "EmacsSQL, sqlite3 backend."
+  :group 'comm)
+
+(defcustom emacsql-sqlite3-executable (executable-find "sqlite3")
+  "The path to sqlite3 executable should be used."
+  :group 'emacsql-sqlite3
+  :type 'file)
+
 (defclass emacsql-sqlite3-connection (emacsql-connection)
   ((file :initarg :file
          :type (or null string)
@@ -148,19 +157,20 @@ each arg will be quoted first."
 ;; Some class don't call superclass's constructor!
 (cl-defmethod initialize-instance :after
     ((conn emacsql-sqlite3-connection) _slots)
-  (cl-assert (executable-find "sqlite3") nil
+  (cl-assert emacsql-sqlite3-executable nil
              "Cannot find executable \"sqlite3\"!")
   (let* ((file (oref conn file))
          (fullfile (if file (list (expand-file-name file))))
          (proc (make-process
                 :name "emacsql-sqlite3"
-                :command `("sqlite3" "--batch"
-                                     ;; Use space as separator,
-                                     ;; which is convenient for `read'.
-                                     "--list" "--separator" " "
-                                     ;; Obviously
-                                     "--nullvalue" "nil"
-                                     ,@fullfile)
+                :command `(,emacsql-sqlite3-executable
+                           "--batch"
+                           ;; Use space as separator,
+                           ;; which is convenient for `read'.
+                           "--list" "--separator" " "
+                           ;; Obviously
+                           "--nullvalue" "nil"
+                           ,@fullfile)
                 :buffer (generate-new-buffer " *emacsql sqlite*")
                 :noquery t
                 :connection-type 'pipe
