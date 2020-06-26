@@ -170,6 +170,8 @@ each arg will be quoted first."
                            "--list" "--separator" " "
                            ;; Obviously
                            "--nullvalue" "nil"
+                           ;; Don't return column headings
+                           "--noheader"
                            ,@fullfile)
                 :buffer (generate-new-buffer " *emacsql sqlite*")
                 :noquery t
