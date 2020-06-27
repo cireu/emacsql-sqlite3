@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        emacs_version:
+          - '26.1'
+          - '26.2'
+          - '26.3'
+          - 'snapshot'
+        cask_version:
+          - '0.8.0'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: purcell/setup-emacs@master
+        with:
+          version: ${{ matrix.emacs_version }}
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+      - uses: conao3/setup-cask@master
+        with:
+          version: ${{ matrix.cask_version }}
+      - name: setup sqlite3 
+        run: |
+          sudo apt-get update
+          sudo apt-get install sqlite3
+      - name: Run test
+        run: |
+          cask install
+          cask build
+          cask emacs -Q --batch -L . -l emacsql-sqlite3-test.el -f ert-run-tests-batch-and-exit
