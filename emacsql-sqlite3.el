@@ -4,7 +4,7 @@
 
 ;; Author: Zhu Zihao <all_but_last@163.com>
 ;; URL: https://github.com/cireu/emacsql-sqlite3
-;; Version: 1.0.0
+;; Version: 1.0.1
 ;; Package-Requires: ((emacs "26.1") (emacsql "3.0.0"))
 ;; Keywords: extensions
 
