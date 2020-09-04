@@ -114,6 +114,13 @@ https://www.sqlite.org/lang_keywords.html")
   :group 'emacsql-sqlite3
   :type 'file)
 
+(defcustom emacsql-sqlite3-init-file null-device
+  "The path to the init file.
+The init file can contain a mix of SQL statements and meta-commands.
+When non-nil, it is passed to the init flag when starting the sqlite3 process."
+  :group 'emacsql-sqlite3
+  :type 'file)
+
 (defclass emacsql-sqlite3-connection (emacsql-connection)
   ((file :initarg :file
          :type (or null string)
@@ -172,6 +179,9 @@ each arg will be quoted first."
                            "--nullvalue" "nil"
                            ;; Don't return column headings
                            "--noheader"
+                           ;; pass init file if set
+                           ,@(when emacsql-sqlite3-init-file
+                               `("--init" ,emacsql-sqlite3-init-file))
                            ,@fullfile)
                 :buffer (generate-new-buffer " *emacsql sqlite*")
                 :noquery t
