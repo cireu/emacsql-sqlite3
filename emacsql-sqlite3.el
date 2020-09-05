@@ -114,12 +114,7 @@ https://www.sqlite.org/lang_keywords.html")
   :group 'emacsql-sqlite3
   :type 'file)
 
-(defcustom emacsql-sqlite3-init-file
-  (pcase system-type
-    ((or `darwin `gnu `gnu/linux `gnu/kfreebsd)
-     "/dev/null")
-    ((or `ms-dos `windows-nt `cygwin)
-     "nul"))
+(defcustom emacsql-sqlite3-init-file null-device
   "The path to the init file.
 The init file can contain a mix of SQL statements and meta-commands.
 When non-nil, it is passed to the init flag when starting the sqlite3 process."
