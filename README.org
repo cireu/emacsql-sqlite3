@@ -25,10 +25,6 @@ precautions.
 - You need to install =sqlite3= official CLI tool, 3.8.2 version or above were
   tested, =emacsql-sqlite3= may won't work if you using lower version.
 
-- =sqlite3= CLI tool will load =~/.sqliterc= if presented, =emacsql-sqlite3=
-  will get undefined behaviour if any error occurred during the load progress.
-  It's better to keep this file empty.
-
 - This package should be compatible with =emacsql-sqlite3= for most cases. But
   foreign key support was disabled by default. To enable this feature, use
   ~(emacsql <db> [:pragma (= foreign_keys ON)])~
