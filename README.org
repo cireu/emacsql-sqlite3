@@ -27,7 +27,7 @@ executable to access SQL database.
 * Usage
 
 For Emacs users, please notice that this package won't provide any feature for
-convenience. *If you don't sure you need this, you probably don't need this.*
+convenience. *If you aren't sure you need this, you probably don't need this.*
 
 For package developers, this package can be a replacement of [[https://github.com/skeeto/emacsql][emacsql-sqlite]] and
 it doesn't require user to have a C compiler, but please read following
